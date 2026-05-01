@@ -40,15 +40,25 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('splash');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSkip, setShowSkip] = useState(false);
   const [favorites, setFavorites] = useState<number[]>(() => {
-    const saved = localStorage.getItem('badisiyat_favorites');
-    return saved ? JSON.parse(saved) : [];
+    try {
+      const saved = localStorage.getItem('badisiyat_favorites');
+      return saved ? JSON.parse(saved) : [];
+    } catch (e) {
+      console.error('LocalStorage error:', e);
+      return [];
+    }
   });
 
   const allQuotes = useMemo(() => categories.flatMap(c => c.quotes), []);
   
   useEffect(() => {
-    localStorage.setItem('badisiyat_favorites', JSON.stringify(favorites));
+    try {
+      localStorage.setItem('badisiyat_favorites', JSON.stringify(favorites));
+    } catch (e) {
+      console.error('LocalStorage save error:', e);
+    }
   }, [favorites]);
 
   const toggleFavorite = (id: number) => {
@@ -64,15 +74,19 @@ export default function App() {
   const filteredQuotes = useMemo(() => {
     if (!searchQuery.trim()) return [];
     return allQuotes.filter(q => 
-      q.text.includes(searchQuery) || 
-      q.reference.includes(searchQuery)
+      q.text.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      q.reference.toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, allQuotes]);
 
   useEffect(() => {
     if (currentScreen === 'splash') {
-      const timer = setTimeout(() => setCurrentScreen('home'), 2500);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setCurrentScreen('home'), 3000);
+      const skipTimer = setTimeout(() => setShowSkip(true), 1500);
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(skipTimer);
+      };
     }
   }, [currentScreen]);
 
@@ -153,10 +167,27 @@ export default function App() {
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 1.1 }}
-              className="text-secondary font-serif text-lg leading-relaxed max-w-[280px]"
+              className="text-secondary font-serif text-lg leading-relaxed max-w-[280px] mb-8"
             >
               "لا يندقّ هذا القلم حتـى تندقّ أمامه جبال من الباطل"
             </motion.p>
+
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 1.5 }}
+              className="flex flex-col items-center gap-4"
+            >
+              <p className="text-secondary/60 text-sm tracking-widest font-bold">بإشراف الأستاذ ربيع شملال</p>
+              {showSkip && (
+                <button 
+                  onClick={() => setCurrentScreen('home')}
+                  className="text-white/40 text-xs border border-white/10 px-4 py-1 rounded-full hover:bg-white/5 transition-colors"
+                >
+                  تخطي الشاشة
+                </button>
+              )}
+            </motion.div>
           </motion.div>
         )}
 

@@ -6,8 +6,36 @@
     <title>My Google AI Studio App</title>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div style="direction: rtl; display: flex; justify-content: center; align-items: center; height: 100vh; background: #2d1610; color: #d4af37; font-family: sans-serif; flex-direction: column; gap: 20px;">
+        <div style="width: 40px; height: 40px; border: 3px solid #d4af3722; border-top: 3px solid #d4af37; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <h2 style="font-size: 1.2rem; font-weight: 300;">جاري تحميل بَادِيسِيَّات...</h2>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+      </div>
+    </div>
+    <noscript>
+      <div style="text-align: center; padding: 50px; font-family: sans-serif;">
+        <h2>عذراً، يجب تفعيل الجافاسكربت لتشغيل التطبيق.</h2>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // التحقق من التشغيل المحلي الخاطئ
+      window.onload = function() {
+        if (window.location.protocol === 'file:') {
+          document.getElementById('root').innerHTML = `
+            <div style="direction: rtl; text-align: center; padding: 40px; font-family: sans-serif; background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 400px; margin: 100px auto;">
+              <h2 style="color: #7c2d12;">تنبيه هام!</h2>
+              <p>أنت تحاول فتح التطبيق مباشرة من جهازك (File Protocol).</p>
+              <p>تطبيقات React الحديثة تحتاج لرفعها على الإنترنت (مثل GitHub) أو تشغيلها عبر خادم محلي لتظهر المحتويات.</p>
+              <div style="background: #fef3c7; padding: 10px; border-radius: 10px; font-size: 14px; color: #92400e;">
+                يرجى اتباع ملف <b>GITHUB_GUIDE_AR.md</b> المرفق.
+              </div>
+            </div>
+          `;
+        }
+      }
+    </script>
   </body>
 </html>
 
