@@ -41,6 +41,8 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSkip, setShowSkip] = useState(false);
+  const [isRandomModalOpen, setIsRandomModalOpen] = useState(false);
+  const [currentRandomQuote, setCurrentRandomQuote] = useState<Quote | null>(null);
   const [favorites, setFavorites] = useState<number[]>(() => {
     try {
       const saved = localStorage.getItem('badisiyat_favorites');
@@ -52,6 +54,12 @@ export default function App() {
   });
 
   const allQuotes = useMemo(() => categories.flatMap(c => c.quotes), []);
+
+  const showRandomQuote = () => {
+    const quote = allQuotes[Math.floor(Math.random() * allQuotes.length)];
+    setCurrentRandomQuote(quote);
+    setIsRandomModalOpen(true);
+  };
   
   useEffect(() => {
     try {
@@ -396,6 +404,65 @@ export default function App() {
         )}
       </AnimatePresence>
 
+      {/* Random Quote Modal */}
+      <AnimatePresence>
+        {isRandomModalOpen && currentRandomQuote && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-6">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsRandomModalOpen(false)}
+              className="absolute inset-0 bg-primary/80 backdrop-blur-sm"
+            ></motion.div>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl relative z-10 overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-secondary/5 rounded-bl-[5rem] -mr-10 -mt-10"></div>
+              <button 
+                onClick={() => setIsRandomModalOpen(false)}
+                className="absolute top-4 left-4 p-2 text-primary/20 hover:text-primary transition-colors"
+              >
+                <X size={24} />
+              </button>
+              
+              <div className="flex flex-col items-center text-center mt-4">
+                <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center text-secondary mb-6">
+                  <QuoteIcon size={24} />
+                </div>
+                
+                <p className="text-2xl font-serif leading-relaxed text-primary mb-8 italic">
+                  "{currentRandomQuote.text}"
+                </p>
+                
+                <div className="w-12 h-0.5 bg-secondary/30 mb-4"></div>
+                <p className="text-[10px] font-bold uppercase tracking-widest text-primary/40 mb-8">
+                  {currentRandomQuote.reference}
+                </p>
+                
+                <div className="flex gap-4 w-full">
+                  <button 
+                    onClick={showRandomQuote}
+                    className="flex-1 bg-primary text-white py-4 rounded-2xl font-bold text-sm shadow-lg shadow-primary/20 active:scale-95 transition-transform"
+                  >
+                    حكمة أخرى
+                  </button>
+                  <button 
+                    onClick={() => shareQuote(currentRandomQuote)}
+                    className="w-14 h-14 bg-accent text-secondary rounded-2xl flex items-center justify-center active:scale-95 transition-transform"
+                  >
+                    <Share2 size={20} />
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Navigation Bar */}
       {currentScreen !== 'splash' && (
         <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-20 bg-white/80 backdrop-blur-md border-t border-black/5 flex items-center justify-around px-8 z-50">
@@ -415,7 +482,10 @@ export default function App() {
             <span className="text-[10px] font-bold">المفضلة</span>
           </button>
 
-          <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center -mt-10 shadow-lg border-4 border-accent active:scale-95 transition-transform cursor-pointer overflow-hidden group">
+          <div 
+            onClick={showRandomQuote}
+            className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center -mt-10 shadow-lg border-4 border-accent active:scale-95 transition-transform cursor-pointer overflow-hidden group"
+          >
              <QuoteIcon size={24} className="group-hover:scale-110 transition-transform" />
           </div>
           <button 
