@@ -21,7 +21,8 @@ import {
   MessageSquareQuote,
   Heart,
   Share2,
-  Trash2
+  Trash2,
+  Download
 } from 'lucide-react';
 import { categories, Category, Quote } from './data';
 
@@ -41,6 +42,7 @@ export default function App() {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showSkip, setShowSkip] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isRandomModalOpen, setIsRandomModalOpen] = useState(false);
   const [currentRandomQuote, setCurrentRandomQuote] = useState<Quote | null>(null);
   const [favorites, setFavorites] = useState<number[]>(() => {
@@ -61,6 +63,25 @@ export default function App() {
     setIsRandomModalOpen(true);
   };
   
+  useEffect(() => {
+    const handleBeforeInstall = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstall);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
+  }, []);
+
+  const handleInstall = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
+
   useEffect(() => {
     try {
       localStorage.setItem('badisiyat_favorites', JSON.stringify(favorites));
@@ -399,6 +420,18 @@ export default function App() {
               <div className="pt-8 text-center text-sm text-primary/40">
                 تصميم وتطوير تعزيز الهوية الجزائرية
               </div>
+
+              {deferredPrompt && (
+                <motion.button
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  onClick={handleInstall}
+                  className="w-full bg-secondary text-primary font-bold py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-secondary/20 active:scale-95 transition-transform mt-8"
+                >
+                  <Download size={20} />
+                  <span>تثبيت التطبيق على الهاتف</span>
+                </motion.button>
+              )}
             </div>
           </motion.div>
         )}

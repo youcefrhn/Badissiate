@@ -18,8 +18,18 @@
         <h2>عذراً، يجب تفعيل الجافاسكربت لتشغيل التطبيق.</h2>
       </div>
     </noscript>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#d4af37">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3233/3233513.png">
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW registration failed:', err));
+        });
+      }
+
       // التحقق من التشغيل المحلي الخاطئ
       window.onload = function() {
         if (window.location.protocol === 'file:') {
