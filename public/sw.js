@@ -20,3 +20,12 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+self.addEventListener('push', function(event) {
+  const data = event.data?.text() || "📖 قول اليوم";
+  event.waitUntil(
+    self.registration.showNotification("باديسيات", {
+      body: data,
+      icon: "/icons/icon-192.png"
+    })
+  );
+});
