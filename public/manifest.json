@@ -1,17 +1,22 @@
 {
-  "name": "بَادِيسِيَّات",
+  "name": "باديسيات - أقوال الإمام ابن باديس",
   "short_name": "باديسيات",
-  "description": "حكم وآثار الإمام عبد الحميد بن باديس",
-  "start_url": "./",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#2d1610",
-  "theme_color": "#d4af37",
+  "background_color": "#0f172a",
+  "theme_color": "#16a34a",
+  "orientation": "portrait",
+  "description": "مجموعة مختارة من أقوال الإمام عبد الحميد ابن باديس",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3233/3233513.png",
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
